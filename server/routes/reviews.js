@@ -16,13 +16,14 @@ const reviewsRouter = require('express').Router();
 reviewsRouter
   .route('/')
   .get(getAllReviews)
-  // .post(postReview)
+  // .post(postReview) -- ADVANCED
   .all(handle405s);
 
 reviewsRouter
   .route('/:review_id')
   .get(getReviewById)
   .patch(patchReviewVotesById)
+  // .delete(deleteReviewById ) -- ADVANCED
   .all(handle405s);
 
 reviewsRouter

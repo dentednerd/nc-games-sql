@@ -7,9 +7,22 @@ const app = require('../app');
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
-// API ERROR HANDLING
+// API
 
 describe('/api', () => {
+  it('returns a JSON of available routes', () => {
+    return request(app)
+    .get('/api')
+    .expect(200)
+    .then(({ body }) => {
+      expect(body).toHaveProperty('/api');
+      expect(body['/api']).toHaveProperty('/categories');
+      expect(body['/api']).toHaveProperty('/reviews');
+      expect(body['/api']).toHaveProperty('/comments');
+      expect(body['/api']).toHaveProperty('/users');
+    });
+  });
+
   it('returns 404 on invalid path', () => {
     return request(app)
       .get('/bla')
