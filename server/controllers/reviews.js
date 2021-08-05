@@ -6,7 +6,9 @@ const {
 } = require('../models/reviews');
 
 const getAllReviews = (req, res, next) => {
-  fetchAllReviews()
+  const { sort_by, order, limit, p } = req.query;
+
+  fetchAllReviews(sort_by, order, limit, p)
     .then((reviews) => {
       res.status(200).send({ reviews });
     })
@@ -36,8 +38,9 @@ const patchReviewVotesById = (req, res, next) => {
 
 const getCommentsByReviewId = (req, res, next) => {
   const { review_id } = req.params;
+  const { limit, p } = req.query;
 
-  fetchCommentsByReviewId(review_id)
+  fetchCommentsByReviewId(review_id, limit, p)
     .then((comments) => {
       res.status(200).send({ comments });
     })

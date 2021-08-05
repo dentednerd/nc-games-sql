@@ -55,11 +55,12 @@ describe('/api/categories', () => {
 
 describe('/api/reviews', () => {
   describe('GET', () => {
-    it('returns an array of all reviews', () => {
+    it('returns an array of the first page of reviews, sorted by created_at in desc order by default', () => {
       return request(app)
         .get('/api/reviews')
         .expect(200)
         .then(({ body: { reviews }}) => {
+          expect(reviews.length).toBe(10);
           reviews.forEach((review) => {
             expect(review).toHaveProperty('review_id');
             expect(review).toHaveProperty('title');
@@ -70,11 +71,48 @@ describe('/api/reviews', () => {
             expect(review).toHaveProperty('category');
             expect(review).toHaveProperty('owner');
             expect(review).toHaveProperty('created_at');
+            expect(reviews).toBeSortedBy('created_at', {
+              descending: true,
+            });
           });
         });
     });
-  })
-})
+
+    it('returns an array of the first page of reviews, sorted by comment_count in descending order', () => {
+      return request(app)
+        .get('/api/reviews?sort_by=comment_count')
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews.length).toBe(10);
+          expect(reviews).toBeSortedBy('comment_count', {
+            descending: true,
+          });
+        });
+    });
+
+    it('returns different results for the first and second page of results', () => {
+      const firstPage = request(app)
+        .get('/api/reviews')
+        .expect(200)
+        .then(({ body: { reviews } }) => reviews);
+      return request(app)
+        .get('/api/reviews?p=2')
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews).not.toBe(firstPage);
+        });
+    });
+
+    it('returns a limited number of results', () => {
+      return request(app)
+        .get('/api/reviews?limit=5')
+        .expect(200)
+        .then(({ body: { reviews }}) => {
+          expect(reviews.length).toBe(5);
+        });
+    });
+  });
+});
 
 describe('/api/reviews/:review_id', () => {
   describe('GET', () => {
@@ -128,6 +166,28 @@ describe('/api/reviews/:review_id/comments', () => {
           })
         });
     });
+
+    it('returns an array of the first page of comments on a given review, sorted by votes in descending order', () => {
+      return request(app)
+        .get('/api/reviews/2/comments?sort_by=votes')
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments.length).toBeLessThanOrEqual(10);
+          expect(comments).toBeSortedBy('votes', {
+            descending: true,
+          });
+        });
+    });
+
+    it('returns a limited number of comments for a given review', () => {
+      return request(app)
+        .get('/api/reviews/2/comments?limit=3')
+        .expect(200)
+        .then(({ body: { comments }}) => {
+          expect(comments.length).toBe(3);
+        });
+    });
+
     it('returns 404 when a review has no comments', () => {
       return request(app)
         .get('/api/reviews/1/comments')
@@ -135,7 +195,7 @@ describe('/api/reviews/:review_id/comments', () => {
         .then(({ body: { msg }}) => {
             expect(msg).toBe('Comments not found');
         });
-    })
+    });
   });
 
   describe('POST', () => {

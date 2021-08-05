@@ -1,5 +1,10 @@
 const { reviewData, commentData } = require('../db/data/test-data');
-const { createLookupTable, formatComments } = require('../db/utils');
+const {
+  createLookupTable,
+  formatComments,
+  validateOrder,
+  validateSortBy
+} = require('../utils');
 
 const testLookupTable = {
   Agricola: 1,
@@ -37,5 +42,19 @@ describe('#formatComments', () => {
     expect(result[0].review_id).toBe(2);
     expect(result[1].author).toBe('mallionaire');
     expect(result[1].review_id).toBe(3);
+  });
+});
+
+describe('#validateOrder', () => {
+  it('validates a correct sort order', () => {
+    expect(validateOrder('asc')).toBe('asc');
+    expect(validateOrder('desc')).toBe('desc');
+  });
+});
+
+describe('#validateSortBy', () => {
+  it('validates a correct column to sort by', () => {
+    const result = validateSortBy('title', ['review_id', 'votes', 'title', 'body']);
+    expect(result).toBe('title');
   });
 });

@@ -5,7 +5,7 @@ const {
   insertReviews,
   insertComments
 } = require('./insert-data');
-const { createLookupTable, formatComments } = require('../utils');
+const { createLookupTable, formatComments } = require('../../utils');
 
 const seed = async (data) => {
   const { categoryData, commentData, reviewData, userData } = data;
