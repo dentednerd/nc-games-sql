@@ -1,31 +1,41 @@
 # Northcoders House of Games
 
-Deployment: [Heroku](https://nc-games-sql-dentednerd.herokuapp.com/)
+[nc-games-sql-dentednerd.herokuapp.com](https://nc-games-sql-dentednerd.herokuapp.com/)
 
 ## requirements
 
 - PSQL: `brew install postgresql`
 - Heroku CLI: `brew tap heroku/brew && brew install heroku`
 
-## development
+## installation
 
 ```sh
 git clone https://github.com/dentednerd/be-nc-games.git
 cd be-nc-games
+npm install
+```
+
+## development
+
+```sh
 npm run setup-dbs
 npm run seed
 npm start
-
-# to push to Github:
-git push origin main
-
-# to deploy to Heroku:
-npm run seed:prod # if first time deploying
-git push heroku main
 ```
 
 ## testing
 
 ```sh
 npm t # jest --verbose
+```
+
+## deployment
+
+```sh
+# to push to Github:
+git push origin main
+
+# to deploy to Heroku:
+npm run seed:prod # if first time deploying
+git push heroku main
 ```
