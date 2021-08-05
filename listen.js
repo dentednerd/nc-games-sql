@@ -1,6 +1,8 @@
 const app = require('./app');
-const PORT = 9090;
 
-app.listen(PORT, () => {
-  console.log(`Northcoders House of Games listening on PORT ${PORT}...`);
+const { PORT = 9090 } = process.env;
+
+app.listen(PORT, (err) => {
+  if (err) throw err;
+  console.log(`nc-games-sql-dentednerd listening on ${PORT}...`);
 });
