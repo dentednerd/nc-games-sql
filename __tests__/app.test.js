@@ -49,6 +49,23 @@ describe('/api/categories', () => {
         });
     });
   });
+
+  describe('POST', () => {
+    it('posts a category', () => {
+      return request(app)
+        .post('/api/categories')
+        .send(  {
+          slug: 'strategy',
+          description:
+            'Strategy-focused board games that prioritise limited-randomness'
+        })
+        .expect(201)
+        .then(({ body: { category } }) => {
+          expect(category.slug).toBe('strategy');
+          expect(category.description).toBe('Strategy-focused board games that prioritise limited-randomness');
+        });
+    });
+  });
 });
 
 // REVIEWS
@@ -112,6 +129,31 @@ describe('/api/reviews', () => {
         });
     });
   });
+
+  describe('POST', () => {
+    it('posts a review', () => {
+      return request(app)
+        .post('/api/reviews')
+        .send({
+          'title': 'Another excellent review',
+          'review_body': 'Testing APIs can be very...testing.',
+          'designer': 'Uwe Rosenberg',
+          'category': 'dexterity',
+          'owner': 'bainesface'
+        })
+        .expect(201)
+        .then(({ body: { review } }) => {
+          expect(review.review_id).toBe(14);
+          expect(review.title).toBe('Another excellent review');
+          expect(review.review_body).toBe('Testing APIs can be very...testing.');
+          expect(review.designer).toBe('Uwe Rosenberg');
+          expect(review.review_img_url).toBe('https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg');
+          expect(review.votes).toBe(0);
+          expect(review.category).toBe('dexterity');
+          expect(review.owner).toBe('bainesface');
+        });
+    });
+  });
 });
 
 describe('/api/reviews/:review_id', () => {
@@ -142,6 +184,22 @@ describe('/api/reviews/:review_id', () => {
         .expect(200)
         .then(({ body: review }) => {
           expect(review.votes).toBe(6);
+        });
+    });
+  });
+
+  describe('DELETE', () => {
+    it('deletes a review', () => {
+      return request(app)
+        .delete('/api/reviews/1')
+        .expect(204)
+        .then(() => {
+          return request(app)
+            .delete('/api/reviews/1')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe('Review not found');
+            });
         });
     });
   });

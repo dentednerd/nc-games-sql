@@ -136,10 +136,58 @@ const postCommentToReview = async (review_id, { body, username }) => {
   return comment;
 }
 
+const insertReview = async ({
+  title,
+  review_body,
+  designer,
+  category,
+  owner
+}) => {
+
+  const queryStr = `
+    INSERT INTO reviews
+    (title, review_body, designer, category, owner)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING *;
+  `;
+
+  const review = await db
+    .query(queryStr, [title, review_body, designer, category, owner])
+    .then(({ rows }) => rows);
+
+  if (!review || !review.length) {
+    return Promise.reject({
+      status: 405,
+      msg: `Unable to post review`,
+    });
+  }
+
+  return review;
+}
+
+const removeReviewById = async (review_id) => {
+  const queryStr = `
+    DELETE FROM reviews
+    WHERE review_id = $1;
+  `;
+
+  const { rowCount: numberOfDeletions } = await db
+    .query(queryStr, [review_id]);
+
+  if (!numberOfDeletions) {
+    return Promise.reject({
+      status: 404,
+      msg: 'Review not found'
+    });
+  }
+}
+
 module.exports = {
   fetchAllReviews,
   fetchReviewById,
   updateReviewVotesById,
   fetchCommentsByReviewId,
-  postCommentToReview
+  postCommentToReview,
+  insertReview,
+  removeReviewById
 };
