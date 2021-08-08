@@ -126,8 +126,7 @@
 
 - [x] Status 200, responds with single user object
 - [x] Status 404, non existant ID, e.g 999
-// TODO:
-- [ ] Status 400, invalid ID, e.g "not-an-id"
+- [ ] TODO: Status 400, invalid ID, e.g "not-an-id"
 
 - `PATCH /api/comments/:comment_id`
 
@@ -138,21 +137,17 @@
 
 ## Extra Advanced Tasks
 
-// TODO:
-
 ### Easier
 
-- [ ] Patch: Edit an review body
-- [ ] Patch: Edit a comment body
-- [ ] Patch: Edit a user's information
-- [ ] Get: Search for an review by title
-- [ ] Post: add a new user
+- [ ] TODO: Patch: Edit an review body
+- [ ] TODO: Patch: Edit a comment body
+- [ ] TODO: Patch: Edit a user's information
+- [ ] TODO: Get: Search for an review by title
+- [ ] TODO: Post: add a new user
 
 ### Harder
 
-// TODO: (with exception of JWT shit)
-
-- [ ] Protect your endpoints with JWT authorization. We have notes on this that will help a bit, _but it will make building the front end of your site a little bit more difficult_
-- [ ] Get: Add functionality to get reviews created in last 10 minutes
-- [ ] Get: Get all reviews that have been liked by a user. This will require an additional junction table.
-- [ ] Research and implement online image storage or random generation of images for categories
+- [ ] TODO: Protect your endpoints with JWT authorization. We have notes on this that will help a bit, _but it will make building the front end of your site a little bit more difficult_
+- [ ] TODO: Get: Add functionality to get reviews created in last 10 minutes
+- [ ] TODO: Get: Get all reviews that have been liked by a user. This will require an additional junction table.
+- [ ] TODO: Research and implement online image storage or random generation of images for categories
