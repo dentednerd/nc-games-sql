@@ -1,14 +1,19 @@
 const db = require('../../db/connection');
 const {
+  fetchUserByUsername
+} = require('./users');
+const {
   validateSortBy,
-  validateOrder
+  validateOrder,
+  validateCategory
 } = require('../../utils');
 
 const fetchAllReviews = async (
   sort_by = 'created_at',
   order = 'desc',
   limit = 10,
-  p = 1
+  p = 1,
+  category
 ) => {
   let queryStr = `
     SELECT reviews.*,
@@ -16,6 +21,14 @@ const fetchAllReviews = async (
     FROM reviews
     LEFT JOIN comments ON comments.review_id = reviews.review_id
   `;
+
+  if (category) {
+    const validCategory = await validateCategory(category);
+
+    if (validCategory) {
+      queryStr += `WHERE reviews.category = '${validCategory.replace("'", "''")}'`;
+    };
+  };
 
   const validSortBy = await validateSortBy(
     sort_by,
@@ -36,13 +49,6 @@ const fetchAllReviews = async (
   const reviews = await db
     .query(queryStr)
     .then(({ rows }) => rows);
-
-  if (!reviews || !reviews.length) {
-    return Promise.reject({
-      status: 404,
-      msg: 'Reviews not found',
-    });
-  }
 
   return reviews;
 }
@@ -91,6 +97,15 @@ const updateReviewVotesById = async (review_id, votes = 0) => {
 };
 
 const fetchCommentsByReviewId = async(review_id, limit = 10, p = 1) => {
+  const validatedReview = await fetchReviewById(review_id);
+
+  if (!validatedReview) {
+    return Promise.reject({
+      status: 404,
+      msg: `Review not found`,
+    });
+  }
+
   const queryStr = `
     SELECT *
     FROM comments
@@ -104,17 +119,17 @@ const fetchCommentsByReviewId = async(review_id, limit = 10, p = 1) => {
     .query(queryStr, [review_id, limit, offset])
     .then(({ rows }) => rows);
 
-  if (!comments.length) {
-    return Promise.reject({
-      status: 404,
-      msg: `Comments not found`,
-    });
-  }
-
   return comments;
 }
 
 const postCommentToReview = async (review_id, { body, username }) => {
+  if (!username || !body) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Missing required fields'
+    });
+  };
+
   const queryStr = `
     INSERT INTO comments
     (review_id, author, body)

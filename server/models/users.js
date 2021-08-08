@@ -20,6 +20,13 @@ const fetchAllUsers = () => {
 }
 
 const fetchUserByUsername = (username) => {
+  if (typeof username !== 'string') {
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad request'
+    });
+  };
+
   const queryStr = `
     SELECT *
     FROM users

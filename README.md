@@ -1,10 +1,13 @@
 # Northcoders House of Games
 
+A RESTful API with a PostgreSQL database.
+
 [nc-games-sql-dentednerd.herokuapp.com](https://nc-games-sql-dentednerd.herokuapp.com/)
 
 ## requirements
 
-- PSQL: `brew install postgresql`
+- Node v14.17.4: [download](https://nodejs.org/)
+- PostgreSQL v13.3: `brew install postgresql`
 - Heroku CLI: `brew tap heroku/brew && brew install heroku`
 
 ## installation
@@ -13,6 +16,8 @@
 git clone https://github.com/dentednerd/be-nc-games.git
 cd be-nc-games
 npm install
+echo PGDATABASE=nc_games_test > .env.test
+echo PGDATABASE=nc_games > .env.development
 ```
 
 ## development
@@ -20,7 +25,7 @@ npm install
 ```sh
 npm run setup-dbs
 npm run seed
-npm start
+npm start # server will listen on port 9090 by default
 ```
 
 ## testing
@@ -36,6 +41,6 @@ npm t # jest --verbose
 git push origin main
 
 # to deploy to Heroku:
-npm run seed:prod # if first time deploying
+npm run seed:prod # on first deploy only
 git push heroku main
 ```

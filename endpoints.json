@@ -1,6 +1,6 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "serves a JSON representation of all the available endpoints of this API"
   },
   "GET /api/categories": {
     "description": "serves an array of all categories",
@@ -14,9 +14,19 @@
       ]
     }
   },
+  "POST /api/categories": {
+    "description": "adds a category",
+    "requiredFields": ["slug", "description"]
+  },
   "GET /api/reviews": {
     "description": "serves an array of all reviews",
-    "queries": ["category", "sort_by", "order"],
+    "queries": [
+      "category",
+      "sort_by",
+      "order",
+      "limit",
+      "p"
+    ],
     "exampleResponse": {
       "reviews": [
         {
@@ -29,6 +39,107 @@
           "votes": 5
         }
       ]
+    }
+  },
+  "POST /api/reviews": {
+    "description": "adds a review",
+    "requiredFields": [
+      "title",
+      "review_body",
+      "designer",
+      "category",
+      "owner"
+    ]
+  },
+  "GET /api/reviews/:review_id": {
+    "description": "serves a single review object",
+    "exampleResponse": {
+      "review": {
+      "review_id": 1,
+      "title": "Culture a Love of Agriculture With Agricola",
+      "review_body": "You could sum up Agricola with the simple phrase 'Farmyeard Fun' but the mechanics and game play add so much more than that. You'll find yourself torn between breeding pigs, or sowing crops. Its joyeous and rewarding and it makes you think of time spent outside, which is much harder to do these days!",
+      "designer": "Uwe Rosenberg",
+      "review_img_url": "https://images.pexels.com/photos/4917821/pexels-photo-4917821.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+      "votes": 8,
+      "category": "strategy",
+      "owner": "tickle122",
+      "created_at": "2021-01-18T10:00:20.514Z"
+      }
+    }
+  },
+  "PATCH /api/reviews/:review_id": {
+    "description": "updates the vote count on a review",
+    "requiredFields": [
+      "inc_votes"
+    ]
+  },
+  "DELETE /api/reviews/review_id":  {
+    "description": "deletes a review"
+  },
+  "GET /api/reviews/review_id/comments": {
+    "description": "serves an array of comments on a given review",
+    "queries": [
+      "sort_by",
+      "order",
+      "limit",
+      "p"
+    ],
+    "exampleResponse": {
+      "comments": [
+      {
+      "comment_id": 1,
+      "author": "happyamy2016",
+      "review_id": 2,
+      "votes": 16,
+      "created_at": "2017-11-22T12:36:03.389Z",
+      "body": "I loved this game too!"
+      },
+      {
+      "comment_id": 4,
+      "author": "tickle122",
+      "review_id": 2,
+      "votes": 16,
+      "created_at": "2017-11-22T12:36:03.389Z",
+      "body": "EPIC board game!"
+      },
+      {
+      "comment_id": 10,
+      "author": "grumpy19",
+      "review_id": 2,
+      "votes": 9,
+      "created_at": "2021-03-27T14:15:31.110Z",
+      "body": "Ex id ipsum dolore non cillum anim sint duis nisi anim deserunt nisi minim."
+      }
+      ]
+    }
+  },
+  "POST /api/reviews/review_id/comments": {
+    "description": "adds a comment to a given review",
+    "requiredFields": [
+      "username",
+      "body"
+    ]
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates the vote count on a given comment",
+    "requiredFields": [
+      "inc_votes"
+    ]
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes a given comment"
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users"
+  },
+  "GET /api/users/username": {
+    "description": "serves a single user object",
+    "exampleResponse": {
+      "user": {
+      "username": "happyamy2016",
+      "name": "Amy Happy",
+      "avatar_url": "https://vignette1.wikia.nocookie.net/mrmen/images/7/7f/Mr_Happy.jpg/revision/latest?cb=20140102171729"
+      }
     }
   }
 }

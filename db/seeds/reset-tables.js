@@ -18,7 +18,7 @@ const createAllTables = async () => {
     CREATE TABLE users (
       username VARCHAR PRIMARY KEY,
       name VARCHAR NOT NULL,
-      avatar_url VARCHAR
+      avatar_url VARCHAR NOT NULL
     );
   `);
   await db.query(`
@@ -27,8 +27,8 @@ const createAllTables = async () => {
       title VARCHAR NOT NULL,
       review_body TEXT NOT NULL,
       designer VARCHAR NOT NULL,
-      review_img_url TEXT DEFAULT 'https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg' NOT NULL,
-      votes INT DEFAULT 0 NOT NULL,
+      review_img_url TEXT DEFAULT 'https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg',
+      votes INT DEFAULT 0,
       category VARCHAR NOT NULL REFERENCES categories(slug),
       owner VARCHAR NOT NULL REFERENCES users(username),
       created_at TIMESTAMP DEFAULT NOW()
@@ -39,7 +39,7 @@ const createAllTables = async () => {
       comment_id SERIAL PRIMARY KEY,
       author VARCHAR REFERENCES users(username) NOT NULL,
       review_id INT REFERENCES reviews(review_id) ON DELETE CASCADE NOT NULL,
-      votes INT DEFAULT 0 NOT NULL,
+      votes INT DEFAULT 0,
       created_at TIMESTAMP DEFAULT NOW(),
       body TEXT NOT NULL
     );

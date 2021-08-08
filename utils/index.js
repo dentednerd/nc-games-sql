@@ -1,4 +1,13 @@
+const db = require('../db/connection');
+
 exports.formatComments = (comments, lookupTable) => {
+  if (!comments || !lookupTable) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Unable to format comments'
+    });
+  };
+
   return comments.map(
     ({ created_by, belongs_to: key, ...restOfComment }) => {
       const newComment = {
@@ -12,6 +21,13 @@ exports.formatComments = (comments, lookupTable) => {
 };
 
 exports.createLookupTable = (arr, finalKey, finalValue) => {
+  if (!arr || !finalKey || !finalValue) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Unable to create lookup table'
+    });
+  };
+
   return arr.reduce((finalObj, current) => {
     finalObj[current[finalKey]] = current[finalValue];
     return finalObj;
@@ -38,3 +54,20 @@ exports.validateOrder = (order) => {
         msg: 'Invalid order query'
       });
 };
+
+exports.validateCategory = async (category) => {
+  const categories = await db
+    .query(`SELECT * FROM categories;`)
+    .then(({ rows }) => {
+      return rows.map((cat) => {
+        return cat.slug;
+      });
+    });
+
+  return categories.includes(category)
+    ? category
+    : Promise.reject({
+      status: 404,
+      msg: 'Category not found'
+    });
+}

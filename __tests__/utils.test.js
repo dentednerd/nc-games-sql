@@ -1,10 +1,14 @@
+const db = require('../db/connection.js');
 const { reviewData, commentData } = require('../db/data/test-data');
 const {
   createLookupTable,
   formatComments,
   validateOrder,
-  validateSortBy
+  validateSortBy,
+  validateCategory
 } = require('../utils');
+
+afterAll(() => db.end());
 
 const testLookupTable = {
   Agricola: 1,
@@ -33,6 +37,12 @@ describe('#createLookupTable', () => {
     const lookupTable = createLookupTable(formattedReviewData, 'title', 'review_id');
     expect(lookupTable).toEqual(testLookupTable);
   });
+
+  it('rejects if any arguments are missing', () => {
+    createLookupTable().catch((err) => {
+      expect(err.msg).toBe('Unable to create lookup table');
+    });
+  });
 });
 
 describe('#formatComments', () => {
@@ -43,6 +53,12 @@ describe('#formatComments', () => {
     expect(result[1].author).toBe('mallionaire');
     expect(result[1].review_id).toBe(3);
   });
+
+  it('rejects if any arguments are missing', () => {
+    formatComments().catch((err) => {
+      expect(err.msg).toBe('Unable to format comments');
+    });
+  });
 });
 
 describe('#validateOrder', () => {
@@ -50,6 +66,11 @@ describe('#validateOrder', () => {
     expect(validateOrder('asc')).toBe('asc');
     expect(validateOrder('desc')).toBe('desc');
   });
+  it('rejects an incorrect sort order', () => {
+    validateOrder('banana').catch((err) => {
+      expect(err.msg).toBe('Invalid order query');
+    })
+  })
 });
 
 describe('#validateSortBy', () => {
@@ -57,4 +78,23 @@ describe('#validateSortBy', () => {
     const result = validateSortBy('title', ['review_id', 'votes', 'title', 'body']);
     expect(result).toBe('title');
   });
+
+  it('rejects an incorrect column to sort by', () => {
+    validateSortBy('banana', ['review_id', 'votes', 'title', 'body']).catch(err => {
+      expect(err.msg).toBe('Invalid sort by query');
+    });
+  });
+});
+
+describe('#validateCategory', () => {
+  it('validates a correct category', () => {
+    validateCategory('dexterity').then(result => {
+      expect(result).toBe('dexterity');
+    });
+  });
+  it('rejects an incorrect category', () => {
+    validateCategory('banana').catch((err) => {
+      expect(err.msg).toBe('Category not found');
+    })
+  })
 });

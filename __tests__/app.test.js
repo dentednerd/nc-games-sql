@@ -10,20 +10,16 @@ afterAll(() => db.end());
 // API
 
 describe('/api', () => {
-  it('returns a JSON of available routes', () => {
+  it('200: returns a JSON of available routes', () => {
     return request(app)
     .get('/api')
     .expect(200)
     .then(({ body }) => {
-      expect(body).toHaveProperty('/api');
-      expect(body['/api']).toHaveProperty('/categories');
-      expect(body['/api']).toHaveProperty('/reviews');
-      expect(body['/api']).toHaveProperty('/comments');
-      expect(body['/api']).toHaveProperty('/users');
+      expect(body).toHaveProperty('endpoints');
     });
   });
 
-  it('returns 404 on invalid path', () => {
+  it('404: error on invalid path', () => {
     return request(app)
       .get('/bla')
       .expect(404)
@@ -37,11 +33,12 @@ describe('/api', () => {
 
 describe('/api/categories', () => {
   describe('GET', () => {
-    it('returns all categories', () => {
+    it('200: returns an array of all categories', () => {
       return request(app)
         .get('/api/categories')
         .expect(200)
         .then(({ body: { categories } }) => {
+          expect(categories.length).toBeGreaterThan(0);
           categories.forEach((category) => {
             expect(category).toHaveProperty('slug');
             expect(category).toHaveProperty('description');
@@ -51,7 +48,7 @@ describe('/api/categories', () => {
   });
 
   describe('POST', () => {
-    it('posts a category', () => {
+    it('201: posts a category', () => {
       return request(app)
         .post('/api/categories')
         .send(  {
@@ -72,7 +69,7 @@ describe('/api/categories', () => {
 
 describe('/api/reviews', () => {
   describe('GET', () => {
-    it('returns an array of the first page of reviews, sorted by created_at in desc order by default', () => {
+    it('200: returns an array of the first page of reviews, sorted by created_at in desc order by default', () => {
       return request(app)
         .get('/api/reviews')
         .expect(200)
@@ -95,7 +92,9 @@ describe('/api/reviews', () => {
         });
     });
 
-    it('returns an array of the first page of reviews, sorted by comment_count in descending order', () => {
+    // SORTED REVIEWS
+
+    it('200: returns an array of the first page of reviews, sorted by comment_count in descending order', () => {
       return request(app)
         .get('/api/reviews?sort_by=comment_count')
         .expect(200)
@@ -107,7 +106,71 @@ describe('/api/reviews', () => {
         });
     });
 
-    it('returns different results for the first and second page of results', () => {
+    it('200: returns an array of the first page of reviews, sorted by comment_count in ascending order', () => {
+      return request(app)
+        .get('/api/reviews?sort_by=comment_count&order=asc')
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews.length).toBe(10);
+          expect(reviews).toBeSortedBy('comment_count', {
+            descending: false,
+          });
+        });
+    });
+
+    it('400: error on invalid sort_by query', () => {
+      return request(app)
+        .get('/api/reviews?sort_by=bananas')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Invalid sort by query');
+        });
+    });
+
+    it('400: error on invalid order query', () => {
+      return request(app)
+        .get('/api/reviews?sort_by=comment_count&order=bananas')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Invalid order query');
+        });
+    });
+
+    // REVIEWS FILTERED BY CATEGORY
+
+    it('200: returns an array of reviews filtered by category', () => {
+      return request(app)
+        .get('/api/reviews?category=dexterity')
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews.length).toBeGreaterThan(0);
+          reviews.forEach((review) => {
+            expect(review.category).toBe('dexterity');
+          });
+        });
+    });
+
+    it('200: returns an empty array when provided a valid category with no reviews', () => {
+      return request(app)
+        .get("/api/reviews?category=children%27s%20games")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews.length).toBe(0);
+        });
+    });
+
+    it('404: error on non-existent category', () => {
+      return request(app)
+        .get('/api/reviews?category=bananas')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Category not found');
+        });
+    });
+
+    // PAGINATED REVIEWS
+
+    it('200: returns different results for the first and second page of results', () => {
       const firstPage = request(app)
         .get('/api/reviews')
         .expect(200)
@@ -120,7 +183,7 @@ describe('/api/reviews', () => {
         });
     });
 
-    it('returns a limited number of results', () => {
+    it('200: returns a limited number of results', () => {
       return request(app)
         .get('/api/reviews?limit=5')
         .expect(200)
@@ -158,7 +221,7 @@ describe('/api/reviews', () => {
 
 describe('/api/reviews/:review_id', () => {
   describe('GET', () => {
-    it('returns a single review', () => {
+    it('200: returns a single review', () => {
       return request(app)
         .get('/api/reviews/1')
         .expect(200)
@@ -174,16 +237,64 @@ describe('/api/reviews/:review_id', () => {
           expect(review).toHaveProperty('created_at');
         });
     });
+
+    it('400: error with an invalid ID', () => {
+      return request(app)
+        .get('/api/reviews/not-an-id')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+
+    it('404: error with non-existent ID', () => {
+      return request(app)
+        .get('/api/reviews/9999')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Review not found');
+        });
+    })
   });
 
   describe('PATCH', () => {
-    it('updates the vote count on a single review', () => {
+    it('200: updates the vote count on a given review', () => {
       return request(app)
         .patch('/api/reviews/2')
         .send({ inc_votes: 1 })
         .expect(200)
         .then(({ body: review }) => {
           expect(review.votes).toBe(6);
+        });
+    });
+
+    it('400: error on invalid ID', () => {
+      return request(app)
+        .patch('/api/reviews/not-an-id')
+        .send({ inc_votes: 1 })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+
+    it('400: error on missing/incorrect ID', () => {
+      return request(app)
+        .patch('/api/reviews/1')
+        .send({ inc_votes: 'banana' })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+
+    it('404: error on non-existent ID', () => {
+      return request(app)
+        .patch('/api/reviews/9999')
+        .send({ inc_votes: 1 })
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Review not found');
         });
     });
   });
@@ -209,11 +320,12 @@ describe('/api/reviews/:review_id', () => {
 
 describe('/api/reviews/:review_id/comments', () => {
   describe('GET', () => {
-    it('returns an array of all comments for a single review', () => {
+    it('200: returns an array of all comments for a review', () => {
       return request(app)
         .get('/api/reviews/2/comments')
         .expect(200)
         .then(({ body: { comments }}) => {
+          expect(comments.length).toBeGreaterThan(0);
           comments.forEach((comment) => {
             expect(comment).toHaveProperty('comment_id');
             expect(comment).toHaveProperty('author');
@@ -221,11 +333,40 @@ describe('/api/reviews/:review_id/comments', () => {
             expect(comment).toHaveProperty('votes');
             expect(comment).toHaveProperty('created_at');
             expect(comment).toHaveProperty('body');
-          })
+          });
         });
     });
 
-    it('returns an array of the first page of comments on a given review, sorted by votes in descending order', () => {
+    it('200: returns an empty array if no comments on a review', () => {
+      return request(app)
+        .get('/api/reviews/1/comments')
+        .expect(200)
+        .then(({ body: { comments }}) => {
+          expect(comments.length).toBe(0);
+        });
+    });
+
+    it('400: error on invalid ID', () => {
+      return request(app)
+        .get('/api/reviews/not-an-id/comments')
+        .expect(400)
+        .then(({ body: { msg }}) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+
+    it('404: error on non-existent ID', () => {
+      return request(app)
+        .get('/api/reviews/9999/comments')
+        .expect(404)
+        .then(({ body: { msg }}) => {
+          expect(msg).toBe('Review not found');
+        });
+    });
+
+    // PAGINATED COMMENTS
+
+    it('200: returns an array of the first page of comments on a given review, sorted by votes in descending order', () => {
       return request(app)
         .get('/api/reviews/2/comments?sort_by=votes')
         .expect(200)
@@ -237,7 +378,7 @@ describe('/api/reviews/:review_id/comments', () => {
         });
     });
 
-    it('returns a limited number of comments for a given review', () => {
+    it('200: returns a limited number of comments on a given review', () => {
       return request(app)
         .get('/api/reviews/2/comments?limit=3')
         .expect(200)
@@ -245,30 +386,64 @@ describe('/api/reviews/:review_id/comments', () => {
           expect(comments.length).toBe(3);
         });
     });
-
-    it('returns 404 when a review has no comments', () => {
-      return request(app)
-        .get('/api/reviews/1/comments')
-        .expect(404)
-        .then(({ body: { msg }}) => {
-            expect(msg).toBe('Comments not found');
-        });
-    });
   });
 
   describe('POST', () => {
-    it('adds a comment to a given review and returns it', () => {
+    it('201: adds a comment to a given review and returns it', () => {
       return request(app)
         .post('/api/reviews/2/comments')
         .send({
           'username': 'bainesface',
           'body': 'Testing APIs can be very...testing.'
         })
+        .expect(201)
         .then(({ body: { comment }}) => {
           expect(comment).toHaveProperty('body');
         });
     });
-    it('returns 422 when no request body provided', () => {
+
+    it('201: adds a comment, ignoring extra properties', () => {
+      return request(app)
+        .post('/api/reviews/2/comments')
+        .send({
+          'username': 'bainesface',
+          'body': 'Testing APIs can be very...testing.',
+          'cats': 'awesome',
+          'dogs': 'alright'
+        })
+        .expect(201)
+        .then(({ body: { comment }}) => {
+          expect(comment).toHaveProperty('body');
+        });
+    });
+
+    it('400: error on invalid ID', () => {
+      return request(app)
+        .post('/api/reviews/not-an-id/comments')
+        .send({
+          'username': 'bainesface',
+          'body': 'Testing APIs can be very...testing.'
+        })
+        .expect(400)
+        .then(({ body: { msg }}) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+
+    it('404: error on invalid ID', () => {
+      return request(app)
+        .post('/api/reviews/9999/comments')
+        .send({
+          'username': 'bainesface',
+          'body': 'Testing APIs can be very...testing.'
+        })
+        .expect(404)
+        .then(({ body: { msg }}) => {
+          expect(msg).toBe('Not found');
+        });
+    });
+
+    it('422 TODO: 400: error when no/incomplete request body provided', () => {
       return request(app)
         .post('/api/reviews/2/comments')
         .send({})
@@ -277,13 +452,26 @@ describe('/api/reviews/:review_id/comments', () => {
           expect(msg).toBe('Unprocessable entity');
         });
     });
+
+    it('404: error when user not found', () => {
+      return request(app)
+        .post('/api/reviews/2/comments')
+        .send({
+          'username': 'dentednerd',
+          'body': 'Testing APIs can be very...testing.'
+        })
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Not found');
+        });
+    });
   })
 });
 
 
 describe('/api/comments/:comment_id', () => {
   describe('DELETE', () => {
-    it('returns 204 when comment is deleted', () => {
+    it('204: deletes a comment', () => {
       return request(app)
         .delete('/api/comments/2')
         .expect(204)
@@ -296,16 +484,64 @@ describe('/api/comments/:comment_id', () => {
             });
         });
     });
+
+    it('404: error with non-existent ID', () => {
+      return request(app)
+        .delete('/api/comments/9999')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Comment not found');
+        });
+    });
+
+    it('400: error with invalid ID', () => {
+      return request(app)
+        .delete('/api/comments/not-an-id')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
   });
 
   describe('PATCH', () => {
-    it ('returns an updated vote count on a comment', () => {
+    it ('200: updates the vote count on a comment', () => {
       return request(app)
         .patch('/api/comments/3')
         .send({ inc_votes: 1 })
         .expect(200)
         .then(({ body: { comment } }) => {
           expect(comment.votes).toBe(11);
+        });
+    });
+
+    it ('400: error on invalid ID', () => {
+      return request(app)
+        .patch('/api/comments/not-an-id')
+        .send({ inc_votes: 1 })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+
+    it ('400: error on invalid body', () => {
+      return request(app)
+        .patch('/api/comments/not-an-id')
+        .send({ inc_votes: 'cool' })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+
+    it ('404: error on non-existent ID', () => {
+      return request(app)
+        .patch('/api/comments/9999')
+        .send({ inc_votes: 1 })
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Comment not found');
         });
     });
   });
@@ -320,6 +556,7 @@ describe('/api/users', () => {
         .get('/api/users')
         .expect(200)
         .then(({ body: { users }}) => {
+          expect(users.length).toBeGreaterThan(0);
           users.forEach((user) => {
             expect(user).toHaveProperty('username');
             expect(user).toHaveProperty('name');
@@ -332,7 +569,7 @@ describe('/api/users', () => {
 
 describe('/api/users/:username', () => {
   describe('GET', () => {
-    it ('returns a single user when provided a single username', () => {
+    it ('200: returns a user when provided a username', () => {
       return request(app)
         .get('/api/users/mallionaire')
         .expect(200)
@@ -345,5 +582,24 @@ describe('/api/users/:username', () => {
           });
         });
     });
+
+    it ('404: error on non-existent username', () => {
+      return request(app)
+        .get('/api/users/dentednerd')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toEqual('User not found');
+        });
+    });
+
+    // TODO:
+    // it ('400: error on invalid username', () => {
+    //   return request(app)
+    //     .get('/api/users/not-an-id')
+    //     .expect(400)
+    //     .then(({ body: { msg } }) => {
+    //       expect(msg).toEqual('Bad request');
+    //     });
+    // });
   });
 });
