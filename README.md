@@ -41,6 +41,10 @@ npm t # jest --verbose
 git push origin main
 
 # to deploy to Heroku:
+# ensure that heroku remote exists:
+git remote -v
+# if no heroku remote:
+git add remote heroku https://git.heroku.com/nc-games-sql-dentednerd.git
 npm run seed:prod # on first deploy only
 git push heroku main
 ```
