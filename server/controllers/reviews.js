@@ -1,5 +1,6 @@
 const {
   fetchAllReviews,
+  fetchReviewsByUser,
   fetchReviewById,
   updateReviewVotesById,
   fetchCommentsByReviewId,
@@ -16,6 +17,16 @@ const getAllReviews = (req, res, next) => {
     })
     .catch(next);
 };
+
+const getReviewsByUser = (req, res, next) => {
+  const { username } = req.params;
+
+  fetchReviewsByUser(username)
+    .then((reviews) => {
+      res.status(200).send({ reviews });
+    })
+    .catch(next);
+}
 
 const getReviewById = (req, res, next) => {
   const { review_id } = req.params;
@@ -70,6 +81,7 @@ const deleteReviewById = (req, res, next) => {
 
 module.exports = {
   getAllReviews,
+  getReviewsByUser,
   getReviewById,
   patchReviewVotesById,
   getCommentsByReviewId,

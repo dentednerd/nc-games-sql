@@ -1,5 +1,6 @@
 const {
   getAllReviews,
+  getReviewsByUser,
   getReviewById,
   patchReviewVotesById,
   getCommentsByReviewId,
@@ -20,6 +21,11 @@ reviewsRouter
   .get(getAllReviews)
   .post(postReview)
   .all(handle405s);
+
+reviewsRouter
+  .route('/by/:username')
+  .get(getReviewsByUser)
+  .all(handle405s)
 
 reviewsRouter
   .route('/:review_id')

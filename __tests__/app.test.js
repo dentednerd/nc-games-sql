@@ -92,6 +92,20 @@ describe('/api/reviews', () => {
         });
     });
 
+    // REVIEWS BY USER
+
+    it('200: returns an array of reviews by a given user', () => {
+      return request(app)
+        .get('/api/reviews/by/mallionaire')
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          reviews.forEach((review) => {
+            expect(review).toHaveProperty('owner');
+            expect(review.owner).toBe('mallionaire');
+          });
+        });
+    });
+
     // SORTED REVIEWS
 
     it('200: returns an array of the first page of reviews, sorted by comment_count in descending order', () => {

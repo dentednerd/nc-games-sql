@@ -71,3 +71,20 @@ exports.validateCategory = async (category) => {
       msg: 'Category not found'
     });
 }
+
+exports.validateUser = async (username) => {
+  const users = await db
+    .query(`SELECT * FROM users;`)
+    .then(({ rows }) => {
+      return rows.map((user) => {
+        return user.username;
+      });
+    });
+
+  return users.includes(username)
+    ? username
+    : Promise.reject({
+      status: 404,
+      msg: 'User not found'
+    });
+}

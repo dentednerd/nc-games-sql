@@ -5,7 +5,8 @@ const {
 const {
   validateSortBy,
   validateOrder,
-  validateCategory
+  validateCategory,
+  validateUser
 } = require('../../utils');
 
 const fetchAllReviews = async (
@@ -49,6 +50,30 @@ const fetchAllReviews = async (
   const reviews = await db
     .query(queryStr)
     .then(({ rows }) => rows);
+
+  return reviews;
+}
+
+const fetchReviewsByUser = async (username) => {
+  const validUsername = await validateUser(username);
+
+  const queryStr = `
+    SELECT *
+    FROM reviews
+    WHERE owner = $1;
+  `;
+
+  const reviews = await db
+    .query(queryStr, [validUsername])
+    .then(({ rows }) => rows);
+
+    if (!reviews || !reviews.length) {
+      console.log('HELP');
+      return Promise.reject({
+        status: 404,
+        msg: `Reviews not found`,
+      });
+    }
 
   return reviews;
 }
@@ -199,6 +224,7 @@ const removeReviewById = async (review_id) => {
 
 module.exports = {
   fetchAllReviews,
+  fetchReviewsByUser,
   fetchReviewById,
   updateReviewVotesById,
   fetchCommentsByReviewId,
