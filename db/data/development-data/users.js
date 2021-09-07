@@ -3,7 +3,7 @@ module.exports = [
     username: 'tickle122',
     name: 'Tom Tickle',
     avatar_url:
-      'https://www.spiritsurfers.net/monastery/wp-content/uploads/_41500270_mrtickle.jpg'
+      'https://vignette.wikia.nocookie.net/the-mr-men-show/images/4/48/Mr._Tickle.png/revision/latest?cb=20190729220715"'
   },
   {
     username: 'grumpy19',
@@ -19,13 +19,13 @@ module.exports = [
   {
     username: 'cooljmessy',
     name: 'Peter Messy',
-    avatar_url: 'https://i.imgur.com/WfX0Neu.jpg'
+    avatar_url: 'https://https://vignette.wikia.nocookie.net/mrmen/images/1/1a/MR_MESSY_4A.jpg/revision/latest/scale-to-width-down/250?cb=20170730171002'
   },
   {
     username: 'weegembump',
     name: 'Gemma Bump',
     avatar_url:
-      'https://www.upandrunning.co.uk/media/catalog/product/cache/1/image/650x/040ec09b1e35df139433887a97daa66f/m/r/mr-bump.jpg'
+      'https://vignette.wikia.nocookie.net/mrmenlittlemiss/images/6/6f/Mrmen_mrbump.jpg/revision/latest?cb=20190904192837'
   },
   {
     username: 'jessjelly',
