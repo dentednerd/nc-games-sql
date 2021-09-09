@@ -617,3 +617,25 @@ describe('/api/users/:username', () => {
     // });
   });
 });
+
+describe('/api/comments/by/:username', () => {
+  it('200: returns an array of comments by a given user', () => {
+    return request(app)
+    .get('/api/comments/by/mallionaire')
+    .expect(200)
+    .then(({ body: { comments } }) => {
+      comments.forEach((comment) => {
+        expect(comment.author).toBe('mallionaire');
+      });
+    });
+  });
+
+  // it ('404: error on non-existent username', () => {
+  //   return request(app)
+  //     .get('/api/comments/by/dentednerd')
+  //     .expect(404)
+  //     .then(({ body: { msg } }) => {
+  //       expect(msg).toEqual('User not found');
+  //     });
+  // });
+});

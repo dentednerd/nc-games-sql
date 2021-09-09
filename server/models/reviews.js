@@ -1,8 +1,5 @@
 const db = require('../../db/connection');
 const {
-  fetchUserByUsername
-} = require('./users');
-const {
   validateSortBy,
   validateOrder,
   validateCategory,

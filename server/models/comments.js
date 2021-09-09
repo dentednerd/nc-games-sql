@@ -1,5 +1,26 @@
 const db = require('../../db/connection');
 
+const fetchCommentsByUser = async (username) => {
+  const queryStr = `
+    SELECT *
+    FROM comments
+    WHERE author = $1;
+  `;
+
+  const comments = await db
+    .query(queryStr, [username])
+    .then(({ rows }) => rows);
+
+  if (!comments || !comments.length) {
+    return Promise.reject({
+      status: 405,
+      msg: `Comments not found`,
+    });
+  }
+
+  return comments;
+}
+
 const postCommentToReview = async (review_id, { body, username }) => {
   const queryStr = `
     INSERT INTO comments
@@ -60,6 +81,7 @@ const updateComment = async (comment_id, inc_votes = 0) => {
 }
 
 module.exports = {
+  fetchCommentsByUser,
   postCommentToReview,
   deleteComment,
   updateComment

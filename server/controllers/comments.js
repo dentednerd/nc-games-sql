@@ -1,8 +1,19 @@
 const {
+  fetchCommentsByUser,
   postCommentToReview,
   deleteComment,
   updateComment
 } = require('../models/comments');
+
+const getCommentsByUser = (req, res, next) => {
+  const { username } = req.params;
+
+  fetchCommentsByUser(username)
+    .then((comments) => {
+      res.status(200).send({ comments })
+    })
+    .catch(next);
+};
 
 const addCommentToReview = (req, res, next) => {
   const { review_id } = req.params;
@@ -37,6 +48,7 @@ const patchComment = (req, res, next) => {
 }
 
 module.exports = {
+  getCommentsByUser,
   addCommentToReview,
   removeComment,
   patchComment
