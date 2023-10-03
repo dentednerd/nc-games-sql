@@ -16,6 +16,8 @@ A RESTful API with a PostgreSQL database.
 git clone https://github.com/dentednerd/nc-games-sql.git
 cd nc-games-sql
 npm run docker:build
+
+# in separate terminal:
 npm run docker:seed
 ```
 
