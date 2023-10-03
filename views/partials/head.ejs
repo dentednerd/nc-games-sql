@@ -1,0 +1,113 @@
+<meta charset="UTF-8">
+<title>nc-news-finale API</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow&family=Bubblegum+Sans&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --colors-white: hsl(0, 0%, 100%);
+    --colors-grey: hsl(0, 0%, 75%);
+    --colors-darkGrey: hsl(0, 0%, 50%);
+    --colors-black: hsl(0, 0%, 0%);
+    --colors-lightBeige: hsl(18, 87%, 95%);
+    --colors-beige: hsl(18, 87%, 88%);
+    --colors-lightNavy: hsl(208, 40%, 85%);
+    --colors-medNavy: hsl(208, 40%, 60%);
+    --colors-navy: hsl(208, 40%, 35%);
+    --colors-purple: hsl(272, 15%, 52%);
+    --colors-coral: hsl(354, 88%, 70%);
+    --colors-link: hsl(11, 85%, 34%);
+    --fonts-bubblegum: "Bubblegum Sans", sans-serif;
+    --fonts-barlow: "Barlow", sans-serif;
+    --space-small: 0.5rem;
+    --space-default: 1rem;
+    --space-large: 2rem;
+    --radii-corner: 1rem;
+    --radii-circle: 50%;
+    --shadows-default: 0 0 0.25rem var(--colors-navy);
+    --shadows-wide: 0 0 0.5rem var(--colors-navy);
+    background-color: var(--colors-navy);
+  }
+
+  *,
+  *:before,
+  *:after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: var(--colors-lightNavy);
+    color: var(--colors-navy);
+    padding: 0px;
+    margin: 0px;
+    font-family: var(--fonts-barlow), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-size: 16px;
+    line-height: 1.2;
+  }
+
+  a {
+    color: var(--colors-link);
+    text-decoration: none;
+  }
+
+  main {
+    padding: 2rem 0;
+  }
+
+  header {
+    height: min-content;
+    width: 100%;
+    background-color: var(--colors-navy);
+    padding: var(--space-default);
+    color: var(--colors-white);
+  }
+
+  .wrapper {
+    max-width: 800px;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+
+  h1 {
+    font-family: var(--fonts-bubblegum);
+    font-size: 1.75rem;
+    text-align: right;
+  }
+
+  h2,
+  h3 {
+    font-family: var(--fonts-bubblegum);
+  }
+
+  p {
+    margin-bottom: 1.2rem;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  td {
+    padding: 0.5rem;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  footer {
+    width: 100%;
+    background-color: var(--colors-navy);
+    padding: 1rem 0;
+  }
+
+  footer a {
+    color: white;
+
+  }
+</style>
