@@ -1,26 +1,21 @@
 {
-  "name": "be-nc-games",
+  "name": "nc-games-sql",
   "version": "1.0.0",
-  "description": "bc-nc-games",
-  "main": "index.js",
+  "description": "A RESTful API with a PostgreSQL database.",
+  "main": "listen.js",
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node ./db/seeds/run-seed.js",
-    "test": "jest --verbose",
+    "seed:prod": "flyctl ssh console -C \"npm run seed\"",
+    "deploy": "fly deploy",
     "start": "node listen.js",
-    "seed:prod": "NODE_ENV=production DATABASE_URL=$(heroku config:get DATABASE_URL) npm run seed"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/northcoders/be-nc-games.git"
+    "test": "jest --verbose",
+    "docker:build": "docker build . -t dentednerd/ncgames-api && docker compose up",
+    "docker:rebuild": "docker compose down -v && docker image prune --force --filter='label=dentednerd/ncgames-api' && docker build . -t dentednerd/ncgames-api && docker compose up",
+    "docker:seed": "docker exec -it games-server -c \"npm run seed\""
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/northcoders/be-nc-games/issues"
-  },
-  "homepage": "https://github.com/northcoders/be-nc-games#readme",
+  "author": "Joey Imlay (dentednerd)",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",

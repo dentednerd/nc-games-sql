@@ -2,13 +2,10 @@
 
 A RESTful API with a PostgreSQL database.
 
-[nc-games-sql-dentednerd.herokuapp.com](https://nc-games-sql-dentednerd.herokuapp.com/)
-
 ## requirements
 
 - Node v14.17.4: [download](https://nodejs.org/)
 - PostgreSQL v13.3: `brew install postgresql`
-- Heroku CLI: `brew tap heroku/brew && brew install heroku`
 
 ## installation
 
