@@ -1,47 +1,40 @@
-# Northcoders House of Games
+# NC Games SQL API
 
 A RESTful API with a PostgreSQL database.
 
-## requirements
+[https://nc-games-finale.fly.dev/api](https://nc-games-finale.fly.dev/api)
+
+## Requirements
 
 - Node v14.17.4: [download](https://nodejs.org/)
-- PostgreSQL v13.3: `brew install postgresql`
+- PostgreSQL v13.3: [download](https://www.postgresql.org/download/)
+- Docker 24.0.6: [download](https://www.docker.com/)
 
-## installation
-
-```sh
-git clone https://github.com/dentednerd/be-nc-games.git
-cd be-nc-games
-npm install
-echo PGDATABASE=nc_games_test > .env.test
-echo PGDATABASE=nc_games > .env.development
-```
-
-## development
+## Installation
 
 ```sh
-npm run setup-dbs
-npm run seed
-npm start # server will listen on port 9090 by default
+git clone https://github.com/dentednerd/nc-games-sql.git
+cd nc-games-sql
+npm run docker:build
+npm run docker:seed
 ```
 
-## testing
+Dev environment will be available on [localhost:9090](http://localhost:9090).
+
+## Testing
 
 ```sh
 npm t # jest --verbose
 ```
 
-## deployment
+## Deployment
 
 ```sh
-# to push to Github:
-git push origin main
+# first time:
+flyctl launch
+npm run deploy
+npm run seed:prod
 
-# to deploy to Heroku:
-# ensure that heroku remote exists:
-git remote -v
-# if no heroku remote:
-git add remote heroku https://git.heroku.com/nc-games-sql-dentednerd.git
-npm run seed:prod # on first deploy only
-git push heroku main
+# subsequently:
+npm run deploy
 ```
