@@ -1,6 +1,6 @@
-# BE Northcoders NC Games Portfolio Check List
+# Self-assessment
 
-## Readme - Remove the one that was provided and write your own:
+## Readme:
 
 - [x] Link to hosted version
 - [x] Write a summary of what the project is
